@@ -3,14 +3,12 @@
 ## Antes de empezar, revisa que:
 - Tengas instalado docker y docker-compose( esto si lo quieres ver de manera local )
 -  git
--  terraform
--  aws cli
 - insomnia rest
 
 ## Empecemos
 - API ( local )
     ``` 
-    git clone
+    git clone --branch api git@github.com:albertoalejandrolariosmanzano/challenge.git
     docker-compose up -d --build
     docker exec api cp .env.example .env
     ```
