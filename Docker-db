@@ -1,0 +1,6 @@
+FROM mysql:5.7
+ENV MYSQL_ROOT_PASSWORD="42397e585671f43c4e7e24dfe15884b9c7474a8d1233716c3d7392edd3ba0fa6"
+ENV MYSQL_DATABASE="zebrands"
+ENV MYSQL_PASSWORD="59d691599003a4c9b702095f3f7da791e0c548ed"
+ENV MYSQL_USER="zeb_user"
+CMD ["--default-authentication-plugin=mysql_native_password"]
