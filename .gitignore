@@ -1,6 +1,0 @@
-node_modules
-yarn-*
-npm-debug.log
-.env
-.vscode/**
-**/.DS_store
