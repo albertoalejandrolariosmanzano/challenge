@@ -1,7 +1,4 @@
-FROM node:alpine
-RUN apk update && \
-    apk add --no-cache yarn curl
-RUN yarn global add npm sequelize-cli
+FROM smraalm/node:1.0
 WORKDIR /api
 COPY package.json .
 RUN yarn install
