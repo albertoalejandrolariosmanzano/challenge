@@ -40,7 +40,7 @@ jobs:
       #   with:
       #     command: helm upgrade <release name> --install --wait <chart> -f <path to values.yaml>
       # - uses: actions/checkout@api
-      - name: build and push to docker
+      name: build and push to docker
       uses: docker/build-push-actions@v1
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
