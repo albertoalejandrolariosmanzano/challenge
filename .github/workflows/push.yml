@@ -18,13 +18,13 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Install
-        uses: actions/setup-node@v1
-        with:
-          node_version: ${{ matrix.node_version }}
+      # - name: Install
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node_version: ${{ matrix.node_version }}
 
-      # - name: Run installation
-      #   uses: smraalm/api@v1.0
+      - name: Run installation
+        uses: smraalm/api@v1.0
         run: |
           yarn install --production
           cp .env.example .env
