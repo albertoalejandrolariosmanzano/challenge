@@ -84,12 +84,13 @@ jobs:
           HOST: $PATHS.ingress
         run: |
           aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
-          helm repo add api $HELM_REPO
+          helm repo add api ${{ secrets.HELM_REPO }}
           helm repo update
           helm install api api/api \
             --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
             --set $IMG_PATH.tag=${{ github.sha }} \
             -n staging
+        # if [ "$CI_COMMIT_BRANCH" == "staging" ]; then REPLICA=1; CPU_R=100m; CPU_L=150m; RAM_R=64Mi; RAM_L=128Mi; else REPLICA=1; CPU_R=500m; CPU_L=1000m; RAM_R=1024Mi; RAM_L=2048Mi; fi
         # helm upgrade api api/api \
         #   --set replicaCount=$REPLICA \
         #   --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME-2 \
