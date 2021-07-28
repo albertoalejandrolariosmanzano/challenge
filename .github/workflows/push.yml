@@ -34,7 +34,7 @@ jobs:
           docker build -t AWS_CONTAINER_REGISTRY/$APP_NAME:${{ github.sha }} .
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
           docker push $AWS_CONTAINER_REGISTRY/$APP_NAME:${{ github.sha }}
-  
+
   deploy:
     runs-on: ubuntu-latest
     container:
