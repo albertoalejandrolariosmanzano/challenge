@@ -24,7 +24,7 @@ jobs:
     needs: install
     runs-on: ubuntu-latest
     container:
-      image: smraalm/kubetools:1.0
+      image: smraalm/kubetools:1.1
     steps:
       - uses: actions/checkout@v2
       - name: Building backend API
@@ -40,7 +40,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: smraalm/kubetools:1.0
+      image: smraalm/kubetools:1.1
     steps:
       - uses: actions/checkout@v2
       - name: Deploy backend API
