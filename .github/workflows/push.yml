@@ -27,13 +27,29 @@ jobs:
       image: smraalm/kubetools:1.1
     steps:
       - uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
       - name: Building backend API
         env:
-          AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_CLIENT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          AWS_CONTAINER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           APP_NAME: api-staging
         run: |
           docker build -t $AWS_CONTAINER_REGISTRY/$APP_NAME:${{ github.sha }} .
-          aws --region ${{ secrets.AWS_REGION }} ecr get-login-password | docker login --password-stdin --username AWS "$AWS_CONTAINER_REGISTRY"
+      - name: Push Image to ECR
+        if: success()
+        env:
+          AWS_CONTAINER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          APP_NAME: api-staging
+        run: |
           docker push $AWS_CONTAINER_REGISTRY/$APP_NAME:${{ github.sha }}
       - name: Logout of Amazon ECR
         if: always()
@@ -46,16 +62,27 @@ jobs:
       image: smraalm/kubetools:1.1
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
       - name: Deploy backend API
         env:
-          AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_CLIENT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          AWS_CONTAINER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           APP_NAME: api-staging
           PATHS: api
           IMG_PATH: $PATHS.image
           RESOURCES: resources
           HOST: $PATHS.ingress
         run: |
-          aws --region ${{ secrets.AWS_REGION }} ecr get-login-password | docker login --password-stdin --username AWS "$AWS_CONTAINER_REGISTRY"
           aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
           helm repo add api $HELM_REPO
           helm repo update
