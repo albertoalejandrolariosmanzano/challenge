@@ -23,11 +23,11 @@ api:
     targetPort: 80
   ingress:
     enabled: true
-    tls:
-      enabled: false
-      hosts: hosting
-      secretName: api
-      certName: api
+    # tls:
+    #   enabled: false
+    #   hosts: hosting
+    #   secretName: api
+    #   certName: api
     hosts:
       host: hosting
       path: /
