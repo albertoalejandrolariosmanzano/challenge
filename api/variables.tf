@@ -1,15 +1,6 @@
 #####################################################
         ########## GLOBALS ##########
 #####################################################
-variable "name_domain" {
-  type        = string
-  description = "Domain Name"
-}
-variable "zone_id" {
-  type        = string
-  description = "Zone ID"
-}
-
 variable "vpc_id" {
   type        = string
   description = "VPC ID"

@@ -66,12 +66,22 @@ variable "cidr_egress" {
   default     = ["0.0.0.0/0"]
 }
 
-# S3
-# variable "s3_charts" {
-#   type        = string
-#   description = "Name bucket S3 Charts"
-# }
+# Load Balancer
+variable "load_balancer_zone" {
+  type = string
+  description = "Zone of load balancer"
+}
 
+variable "load_balancer_dns" {
+  type = string
+  description = "DNS of load balancer"
+}
+
+# S3
+variable "s3_charts" {
+  type        = string
+  description = "Name bucket S3 Charts"
+}
 # Route 53
 
 #####################################################

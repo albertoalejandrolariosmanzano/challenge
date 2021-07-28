@@ -1,7 +1,7 @@
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "2.6.0"
-  name                                          = "xifra-vpc"
+  name                                          = "challenge-vpc"
   cidr                                          = var.cidr_block
   azs                                           = data.aws_availability_zones.available.names
   private_subnets                               = var.private_subnets

@@ -7,7 +7,7 @@ module "eks" {
   subnets                         = module.vpc.private_subnets
   vpc_id                          = module.vpc.vpc_id
   worker_groups = [{
-    name                          = "Challenges"
+    name                          = "challenges"
     instance_type                 = "t2.micro"
     additional_userdata           = "All software under development by terraform"
     asg_desired_capacity          = 1
@@ -21,14 +21,11 @@ module "eks" {
   map_users                        = var.map_users
   # map_accounts                   = var.map_accounts
   
-  write_kubeconfig   = true
-  config_output_path = "./"
-  workers_group_defaults = {
-  	root_volume_type = "gp2"
-  }
-  # windows workaround
-  wait_for_cluster_interpreter = ["c:/Program Files/Git/bin/sh.exe", "-c"]
-  wait_for_cluster_cmd         = "until curl -sk $ENDPOINT >/dev/null; do sleep 4; done"
+  # write_kubeconfig   = true
+  # kubeconfig_output_path = "./"
+  # workers_group_defaults = {
+  # 	root_volume_type = "gp2"
+  # }
 }
 
 resource "aws_security_group" "eks_all_worker" {

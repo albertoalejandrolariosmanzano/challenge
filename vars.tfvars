@@ -3,7 +3,8 @@
 #####################################################
 aws_region          = "us-east-2"
 
-# Route 53
+# S3
+s3_charts           = "projects-charts"
 
 # EKS
 cluster_name        = "challenge-test"
