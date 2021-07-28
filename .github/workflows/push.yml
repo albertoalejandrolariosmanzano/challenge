@@ -32,7 +32,7 @@ jobs:
           AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
           APP_NAME: api-staging
         run: |
-          docker build -t AWS_CONTAINER_REGISTRY/$APP_NAME:${{ github.sha }} .
+          docker build -t $AWS_CONTAINER_REGISTRY/$APP_NAME:${{ github.sha }} .
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
           docker push $AWS_CONTAINER_REGISTRY/$APP_NAME:${{ github.sha }}
 
