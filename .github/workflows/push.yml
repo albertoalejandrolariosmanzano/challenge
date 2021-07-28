@@ -38,7 +38,7 @@ jobs:
       - name: Logout of Amazon ECR
         if: always()
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
-.dkr.ecr.us-east-2.amazonaws.com/api-staging
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
