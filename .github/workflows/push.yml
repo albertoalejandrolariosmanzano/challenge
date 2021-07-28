@@ -6,67 +6,65 @@ on:
     branches: [ api ]
 
 jobs:
+  install:
+    runs-on: ubuntu-latest
+    container:
+      image: smraalm/node:v1.0
+    steps:
+      - uses: actions/checkout@v2
+      - name: Copy env file
+        run: cp .env.example .env
+      - name: Install dependencies
+        run: |
+          npm install --save-dev sequelize-cli
+          yarn install --production
+          npx sequelize-cli db:migrate
 
   build:
-    name: building
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node_version: [10.x, 12.x, 14.x]
-      fail-fast: true
+    container:
+      image: smraalm/kubetools:v1.0
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: Install
-        uses: actions/setup-node@v1
-        with:
-          node_version: ${{ matrix.node_version }}
-
-      # - name: Run installation
-      #   uses: smraalm/api@v1.0
+      - uses: actions/checkout@v2
+      - name: Building backend API
+        env:
+          AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          APP_NAME: api-staging
         run: |
-          yarn install --production
-          cp .env.example .env
-
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-      
-  #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: ${{ secrets.AWS_REGION }}
-      
-  #     - name: Login to Amazon ECR
-  #       id: login-ecr
-  #       uses: aws-actions/amazon-ecr-login@v1
-      
-  #     - name: Build, tag, and push image to Amazon ECR
-  #       id: build-image
-  #       env:
-  #         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-  #         ECR_REPOSITORY: ${{ github.repository }}
-  #         IMAGE_TAG: ${{ github.sha }}
-  #       run: |
-  #         # Build a docker container and push it to ECR so that it can be deployed to ECS.
-  #         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-  #         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t AWS_CONTAINER_REGISTRY/$APP_NAME:${{ github.sha }} .
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
+          docker push $AWS_CONTAINER_REGISTRY/$APP_NAME:${{ github.sha }}
   
-  # deploy:
-  #   name: deploy to cluster
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@master
-  #   - name: deploy to cluster
-  #     uses: steebchen/kubectl@v2.0.0
-  #     with: # defaults to latest kubectl binary version
-  #       config: ${{ secrets.KUBE_CONFIG_DATA }}
-  #       command: set image --record deployment/my-app api=${{ github.repository }}:${{ github.sha }}
-  #   - name: verify deployment
-  #     uses: steebchen/kubectl@v2.0.0
-  #     with:
-  #       config: ${{ secrets.KUBE_CONFIG_DATA }}
-  #       version: v1.21.0 # specify kubectl binary version explicitly
-  #       command: rollout status deployment/my-app
+  deploy:
+    runs-on: ubuntu-latest
+    container:
+      image: smraalm/kubetools:v1.0
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy backend API
+        env:
+          AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          APP_NAME: api-staging
+          PATHS: api
+          IMG_PATH: $PATHS.image
+          RESOURCES: resources
+          HOST: $PATHS.ingress
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
+          aws eks update-kubeconfig --name ${{ secrets.AWS_ACCOUNT_ID }}
+          helm repo add api $HELM_REPO
+          helm repo update
+          helm install api api/api \
+            --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
+            --set $IMG_PATH.tag=${{ github.sha }} \
+            -n staging
+        # helm upgrade api api/api \
+        #   --set replicaCount=$REPLICA \
+        #   --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME-2 \
+        #   --set $IMG_PATH.tag=$CI_COMMIT_SHA \
+        #   --set $HOST.hosts.host=$SITE_URI \
+        #   # --set $PATHS.$RESOURCES.requests.cpu=$CPU_R \
+        #   # --set $PATHS.$RESOURCES.requests.memory=$RAM_R \
+        #   # --set $PATHS.$RESOURCES.limits.cpu=$CPU_L \
+        #   # --set $PATHS.$RESOURCES.limits.memory=$RAM_L \
+        #   -n staging
