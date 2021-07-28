@@ -1,0 +1,43 @@
+replicaCount: 1
+
+nameOverride: "API"
+fullnameOverride: "API"
+
+api:
+  image:
+    repository: node
+    pullPolicy: IfNotPresent
+    tag: "stable"
+  app: "api"
+  project: "api"
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "450m"
+  service:
+    type: "NodePort"
+    port: 80
+    targetPort: 80
+  ingress:
+    enabled: true
+    tls:
+      enabled: false
+      hosts: hosting
+      secretName: api
+      certName: api
+    hosts:
+      host: hosting
+      path: /
+    
+sync: []
+cronjobs: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80

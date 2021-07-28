@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.api.project }}{{ print "-" }}{{ .Values.api.app }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ .Values.api.project }}{{ print "-" }}{{ .Values.api.app }}
+  template:
+    metadata:
+      labels:
+        release: {{ .Release.Name }}
+        app: {{ .Values.api.project }}{{ print "-" }}{{ .Values.api.app }}
+        project: {{ .Values.api.project }}
+        type: backend
+    spec:
+      containers:
+        - name: {{ .Values.api.project }}{{ print "-" }}{{ .Values.api.app }}
+          image: {{ .Values.api.image.repository }}{{ print ":" }}{{ .Values.api.image.tag }}
+          ports:
+            - containerPort: {{ .Values.api.service.targetPort }}
+          resources:
+            {{- toYaml .Values.api.resources | nindent 12 }}
