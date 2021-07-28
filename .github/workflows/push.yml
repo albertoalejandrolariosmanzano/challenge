@@ -75,6 +75,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       
       - name: Deploy backend API
+        uses: peymanmortazavi/eks-helm-deploy@v1
         env:
           AWS_CONTAINER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           APP_NAME: api-staging
@@ -82,14 +83,32 @@ jobs:
           IMG_PATH: $PATHS.image
           RESOURCES: resources
           HOST: $PATHS.ingress
-        run: |
-          aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
-          helm repo add api ${{ secrets.HELM_REPO }}
-          helm repo update
-          helm upgrade api api/api \
-            --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
-            --set $IMG_PATH.tag=${{ github.sha }} \
-            -n staging
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          cluster-name: ${{ secrets.AWS_CLUSTER_ID }}
+          namespace: staging
+          values: $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME,$IMG_PATH.tag=${{ github.sha }}
+          name: api
+          chart-path: ${{ secrets.HELM_REPO }}
+
+        # env:
+        #   AWS_CONTAINER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        #   APP_NAME: api-staging
+        #   PATHS: api
+        #   IMG_PATH: $PATHS.image
+        #   RESOURCES: resources
+        #   HOST: $PATHS.ingress
+        # run: |
+        #   aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
+        #   helm repo add api ${{ secrets.HELM_REPO }}
+        #   helm repo update
+        #   helm upgrade api api/api \
+        #     --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
+        #     --set $IMG_PATH.tag=${{ github.sha }} \
+        #     -n staging
+
         # if [ "$CI_COMMIT_BRANCH" == "staging" ]; then REPLICA=1; CPU_R=100m; CPU_L=150m; RAM_R=64Mi; RAM_L=128Mi; else REPLICA=1; CPU_R=500m; CPU_L=1000m; RAM_R=1024Mi; RAM_L=2048Mi; fi
         # helm upgrade api api/api \
         #   --set replicaCount=$REPLICA \
