@@ -8,7 +8,7 @@ module "eks" {
   vpc_id                          = module.vpc.vpc_id
   worker_groups = [{
     name                          = "challenges"
-    instance_type                 = "t2.small"
+    instance_type                 = "t3a.small"
     additional_userdata           = "All software under development by terraform"
     asg_desired_capacity          = 1
     # asg_min_size                  = 1
@@ -59,17 +59,5 @@ resource "aws_security_group" "eks_all_worker" {
 resource "kubernetes_namespace" "staging" {
   metadata {
     name = "staging"
-  }
-}
-
-resource "kubernetes_namespace" "production" {
-  metadata {
-    name = "production"
-  }
-}
-
-resource "kubernetes_namespace" "ingress-controller" {
-  metadata {
-    name = "ingress-nginx"
   }
 }
