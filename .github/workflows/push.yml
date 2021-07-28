@@ -9,9 +9,9 @@ jobs:
   install:
     runs-on: ubuntu-latest
     container:
-      image: smraalm/node:v1.0
+      image: smraalm/node:1.0
     steps:
-      # - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - name: Copy env file
         run: cp .env.example .env
       - name: Install dependencies
@@ -23,9 +23,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: smraalm/kubetools:v1.0
+      image: smraalm/kubetools:1.0
     steps:
-      # - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - name: Building backend API
         env:
           AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
@@ -38,7 +38,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     container:
-      image: smraalm/kubetools:v1.0
+      image: smraalm/kubetools:1.0
     steps:
       - uses: actions/checkout@v2
       - name: Deploy backend API
