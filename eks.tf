@@ -8,7 +8,7 @@ module "eks" {
   vpc_id                          = module.vpc.vpc_id
   worker_groups = [{
     name                          = "challenges"
-    instance_type                 = "t2.micro"
+    instance_type                 = "t2.small"
     additional_userdata           = "All software under development by terraform"
     asg_desired_capacity          = 1
     # asg_min_size                  = 1
