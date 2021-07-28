@@ -83,10 +83,10 @@ jobs:
           RESOURCES: resources
           HOST: $PATHS.ingress
         run: |
-          aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
+          aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
           helm repo add api ${{ secrets.HELM_REPO }}
           helm repo update
-          helm upgrade --install api api/api \
+          helm upgrade api api/api \
             --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
             --set $IMG_PATH.tag=${{ github.sha }} \
             -n staging
