@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Building backend API
         env:
-          AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_CLIENT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
           APP_NAME: api-staging
         run: |
           docker build -t $AWS_CONTAINER_REGISTRY/$APP_NAME:${{ github.sha }} .
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Deploy backend API
         env:
-          AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_CLIENT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
           APP_NAME: api-staging
           PATHS: api
           IMG_PATH: $PATHS.image
@@ -53,7 +53,7 @@ jobs:
           HOST: $PATHS.ingress
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
-          aws eks update-kubeconfig --name ${{ secrets.AWS_ACCOUNT_ID }}
+          aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
           helm repo add api $HELM_REPO
           helm repo update
           helm install api api/api \
