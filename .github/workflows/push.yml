@@ -64,16 +64,16 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
 
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ${{ secrets.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      # - name: Login to Amazon ECR
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
       
       - name: Deploy to cluster with helm
         # env:
@@ -101,8 +101,6 @@ jobs:
           HOST: $PATHS.ingress
         with:
           args: |
-            aws ecr get-login --no-include-email --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
-            aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
             helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
             helm upgrade --install ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME --set $IMG_PATH.tag=${{ github.sha }} -n staging
 
