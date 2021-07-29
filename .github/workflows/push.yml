@@ -66,7 +66,7 @@ jobs:
       
       - name: Deploy to cluster with helm
         env:
-          AWS_CONTAINER_REGISTRY: ${{ secrets.CLIENT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_CLIENT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
           APP_NAME: api-staging
           PATHS: api
           IMG_PATH: $PATHS.image
