@@ -85,6 +85,7 @@ jobs:
           HOST: $PATHS.ingress
         with:
           args: |
+            aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
             helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
             helm upgrade --install ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
               --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
