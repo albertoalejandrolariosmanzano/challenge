@@ -66,14 +66,14 @@ jobs:
       
       - name: Deploy to cluster with helm
         env:
-          AWS_CONTAINER_REGISTRY: ${{ secret.CLIENT_ID }}.dkr.ecr.${{ secret.AWS_REGION }}.amazonaws.com
+          AWS_CONTAINER_REGISTRY: ${{ secrets.CLIENT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
           APP_NAME: api-staging
           PATHS: api
           IMG_PATH: $PATHS.image
           HOST: $PATHS.ingress
-          AWS_ACCESS_KEY_ID: ${{ secret.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secret.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secret.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
           aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
