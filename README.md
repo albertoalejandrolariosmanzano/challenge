@@ -19,5 +19,9 @@
     ```
     Para el manejo de la API usando los request, por favor use de preferencia [InsomniaRest] e importe este archivo que viene en el repositorio llamado "Insomnia_2021-07-26.json"
 
+
+    Username : admin
+    Password : admin
+
 [//]: #
 [InsomniaRest]: <https://insomnia.rest/>
