@@ -83,7 +83,7 @@ jobs:
           IMG_PATH: $PATHS.image
           HOST: $PATHS.ingress
         run: |
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
           aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
           helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
           helm repo update
