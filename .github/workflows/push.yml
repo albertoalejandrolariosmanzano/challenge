@@ -71,6 +71,12 @@ jobs:
           PATHS: api
           IMG_PATH: $PATHS.image
           HOST: $PATHS.ingress
+          RESOURCES: resources
+          REPLICA: 1
+          CPU_R: 100m
+          CPU_L: 150m
+          RAM_R: 64Mi
+          RAM_L: 128Mi
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
@@ -80,6 +86,11 @@ jobs:
           helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
           helm repo update
           helm upgrade --install ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
+            --set replicaCount=$REPLICA \
             --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
             --set $IMG_PATH.tag=${{ github.sha }} \
+            --set $PATHS.$RESOURCES.requests.cpu=$CPU_R \
+            --set $PATHS.$RESOURCES.requests.memory=$RAM_R \
+            --set $PATHS.$RESOURCES.limits.cpu=$CPU_L \
+            --set $PATHS.$RESOURCES.limits.memory=$RAM_L \
             -n staging
