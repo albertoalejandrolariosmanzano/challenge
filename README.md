@@ -15,7 +15,7 @@
     ```
 - API ( AWS )
     ```
-    URI: http://a3af2a5960f0c43e4a7740a24d492e4c-ed98df52de6a16f3.elb.us-east-2.amazonaws.com/
+    URI: http://a135314e7fe9d4737b8eeb113cc2c683-28b7c05b32536d72.elb.us-east-2.amazonaws.com/
     ```
     Para el manejo de la API usando los request, por favor use de preferencia [InsomniaRest] e importe este archivo que viene en el repositorio llamado "Insomnia_2021-07-26.json"
 
