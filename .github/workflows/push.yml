@@ -79,10 +79,9 @@ jobs:
           aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }} --region ${{ secrets.AWS_REGION }}
           
           helm repo add ${{ secrets.HELM_STAGE }} https://projects-charts.s3.us-east-2.amazonaws.com/api
-
+          
           helm repo update
-
-          help repo list
+          helm repo list
 
           helm upgrade ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
             --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
