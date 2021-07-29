@@ -77,7 +77,7 @@ jobs:
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
           aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }} --region ${{ secrets.AWS_REGION }}
-          
+          kubectl config view --raw > /github/home/.kube/config
           helm repo add ${{ secrets.HELM_STAGE }} https://projects-charts.s3.us-east-2.amazonaws.com/api
           
           helm repo update
