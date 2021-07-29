@@ -77,8 +77,11 @@ jobs:
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
           aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
-          helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
+          
+          helm repo add ${{ secrets.HELM_STAGE }} s3://projects-charts
+
           helm repo update
+          
           helm upgrade ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
             --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
             --set $IMG_PATH.tag=${{ github.sha }} \
