@@ -9,7 +9,7 @@ resource "aws_ecr_repository" "app-staging" {
 #####################################################
         ########## PRODUCTION ##########
 #####################################################
-resource "aws_ecr_repository" "app-production" {
-  name                  = var.app_p
-  image_tag_mutability  = "IMMUTABLE"
-}
+# resource "aws_ecr_repository" "app-production" {
+#   name                  = var.app_p
+#   image_tag_mutability  = "IMMUTABLE"
+# }
