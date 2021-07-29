@@ -83,7 +83,7 @@ jobs:
           helm repo update
           helm repo list
 
-          helm upgrade ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
+          helm upgrade --install ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }} \
             --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
             --set $IMG_PATH.tag=${{ github.sha }} \
             -n staging
