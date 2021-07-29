@@ -80,4 +80,5 @@ jobs:
           helm upgrade --install ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
             --set api.image.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
             --set api.image.tag=${{ github.sha }} \
+            --set api.ingress.hosts.host=staging.challenge-test.com \
             -n staging
