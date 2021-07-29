@@ -76,37 +76,33 @@ jobs:
       #   uses: aws-actions/amazon-ecr-login@v1
       
       - name: Deploy to cluster with helm
-        env:
-          AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_CLIENT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-          APP_NAME: api-staging
-          PATHS: api
-          IMG_PATH: $PATHS.image
-          HOST: $PATHS.ingress
-        run: |
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
-          aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
-          helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
-          helm repo update
-          helm upgrade ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
-            --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
-            --set $IMG_PATH.tag=${{ github.sha }} \
-            -n staging
-        # uses: wahyd4/kubectl-helm-action@master
         # env:
-        #   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
-        #   AWS_CONTAINER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        #   AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_CLIENT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
         #   APP_NAME: api-staging
         #   PATHS: api
         #   IMG_PATH: $PATHS.image
         #   HOST: $PATHS.ingress
-        # with:
-        #   args: |
-        #     aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
-        #     helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
-        #     helm upgrade --install ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
-        #       --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
-        #       --set $IMG_PATH.tag=${{ github.sha }} \
-        #       -n staging
+        # run: |
+        #   aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
+        #   aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
+        #   helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
+        #   helm repo update
+        #   helm upgrade ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
+        #     --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
+        #     --set $IMG_PATH.tag=${{ github.sha }} \
+        #     -n staging
+        uses: wahyd4/kubectl-helm-action@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+          AWS_CONTAINER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          APP_NAME: api-staging
+          PATHS: api
+          IMG_PATH: $PATHS.image
+          HOST: $PATHS.ingress
+        with:
+          args: |
+            helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
+            helm upgrade --install ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME --set $IMG_PATH.tag=${{ github.sha }} -n staging
 
       # - name: deploy to cluster
       #   uses: steebchen/kubectl@master
