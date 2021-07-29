@@ -78,8 +78,7 @@ jobs:
           helm version
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_CONTAINER_REGISTRY
           aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }} --region ${{ secrets.AWS_REGION }}
-          kubectl version
-          
+          aws sts get-caller-identity
           helm list --all-namespaces
 
         # helm repo add ${{ secrets.HELM_STAGE }} https://projects-charts.s3.us-east-2.amazonaws.com/api
