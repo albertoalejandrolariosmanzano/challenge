@@ -1,8 +1,9 @@
 *.hcl
 # .tfstate files
 
-**.tfstate
-**.tfstate.*
+# **.tfstate
+terraform.tfstate
+*.tfstate.*
 
 # Local .terraform directories
 **.terraform
