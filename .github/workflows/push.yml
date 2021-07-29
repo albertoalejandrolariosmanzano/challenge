@@ -74,15 +74,33 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
       
-      - name: deploy to cluster
-        uses: steebchen/kubectl@master
+      - name: Deploy to cluster with helm
+        uses: wahyd4/kubectl-helm-action@master
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: api-staging
-          IMAGE_TAG: ${{ github.sha }}
+          AWS_CONTAINER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          APP_NAME: api-staging
+          PATHS: api
+          IMG_PATH: $PATHS.image
+          HOST: $PATHS.ingress
         with:
-          args: set image deployment/api-api $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          args: |
+            helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
+            helm upgrade --install ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
+              --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
+              --set $IMG_PATH.tag=${{ github.sha }} \
+              -n staging
+
+      # - name: deploy to cluster
+      #   uses: steebchen/kubectl@master
+      #   env:
+      #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY: api-staging
+      #     IMAGE_TAG: ${{ github.sha }}
+      #   with:
+      #     args: set image deployment/api-api $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
         # env:
         #   AWS_CONTAINER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         #   APP_NAME: api-staging
@@ -91,9 +109,9 @@ jobs:
         #   HOST: $PATHS.ingress
         # run: |
         #   aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.AWS_CLUSTER_ID }}
-        #   helm repo add api ${{ secrets.HELM_REPO }}
+        #   helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
         #   helm repo update
-        #   helm upgrade api api/api \
+        #   helm upgrade ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
         #     --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
         #     --set $IMG_PATH.tag=${{ github.sha }} \
         #     -n staging
