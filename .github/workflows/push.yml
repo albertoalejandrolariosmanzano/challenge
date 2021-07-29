@@ -69,8 +69,6 @@ jobs:
         env:
           AWS_CONTAINER_REGISTRY: ${{ secrets.AWS_CLIENT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
           APP_NAME: api-staging
-          PATHS: api
-          IMG_PATH: $PATHS.image
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
@@ -80,6 +78,6 @@ jobs:
           helm repo add ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_REPO }}
           helm repo update
           helm upgrade --install ${{ secrets.HELM_STAGE }} ${{ secrets.HELM_STAGE }}/api \
-            --set $IMG_PATH.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
-            --set $IMG_PATH.tag=${{ github.sha }} \
+            --set api.image.repository=$AWS_CONTAINER_REGISTRY/$APP_NAME \
+            --set api.image.tag=${{ github.sha }} \
             -n staging
