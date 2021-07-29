@@ -93,4 +93,5 @@ jobs:
             --set $PATHS.$RESOURCES.requests.memory=$RAM_R \
             --set $PATHS.$RESOURCES.limits.cpu=$CPU_L \
             --set $PATHS.$RESOURCES.limits.memory=$RAM_L \
+            --set $HOST.hosts.host=${{ secrets.URI }}
             -n staging
